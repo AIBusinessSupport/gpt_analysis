@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT Analysis</title>
+</head>
+<body>
+    <form id="imageForm" method="post" enctype="multipart/form-data">
+        <input type="text" id="imageData" name="imageData" size='30' placeholder="Paste your image or questions here">
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        document.getElementById('imageData').addEventListener('paste', function (event) {
+            var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (index in items) {
+                var item = items[index];
+                if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
+                    var blob = item.getAsFile();
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('imageData').value = e.target.result;
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

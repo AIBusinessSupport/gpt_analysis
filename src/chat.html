@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT Analysis</title>
+</head>
+<body>
+    <h1>GPT Analysis</h1>
+    <div id="chat"></div>
+    <input type="text" id="user_message" placeholder="Enter your message">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function sendMessage() {
+            var userMessage = document.getElementById('user_message').value;
+            var chat = document.getElementById('chat');
+            /*chat.innerHTML += '<p>You: ' + userMessage + '</p>';
+            */
+            var data = { 'user_message': userMessage };
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = data.bot_response;
+                chat.innerHTML += '<p>' + botResponse + '</p>';
+            });
+        }
+
+        document.addEventListener('paste', function(event) {
+            var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (index in items) {
+                var item = items[index];
+                if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
+                    var blob = item.getAsFile();
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var image = document.createElement('img');
+                        image.src = e.target.result;
+                        document.getElementById('chat').appendChild(image);
+                        
+                        var dataURL = e.target.result;
+                        var data = { 'image_data': dataURL };
+                        /*
+                        fetch('/ask', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: new URLSearchParams({ 'image_data': dataURL }).toString()
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            var botResponse = data.bot_response;
+                            document.getElementById('chat').innerHTML += '<p>' + botResponse + '</p>';
+                        })
+                        .catch(err => console.log(err));
+                        */
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

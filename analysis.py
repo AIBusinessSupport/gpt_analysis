@@ -60,6 +60,7 @@ class Conversation:
 
         # Check if there is an image in the clipboard
         if isinstance(image, ImageGrab.Image.Image):
+            config.new_image_bool = True
             # Create a BytesIO object to hold the image data
             buffered = BytesIO()
 
@@ -78,8 +79,9 @@ class Conversation:
             # Output the Base64 string
             return img_base64_str
         else:
-            raise Exception("No image data is found in the clipboard.")
-
+            config.new_image_bool = False
+            raise Exception("No image data is found in the clipboard. please paste image")
+            
     def submit_chart(
         self, instruction=config.TARGET_INSTRUCTION
     ):
@@ -112,7 +114,7 @@ class Conversation:
             }
         )
 
-    def handler(self):
+    def handler(self, prompt):
         if len(self.payload["messages"]) == 1:
             self.submit_chart()
 
@@ -126,29 +128,35 @@ class Conversation:
         response_json = response.json()
 
         if response_json.get("choices"):
-            msg = response_json["choices"][0]["message"]["content"]
-            self.payload["messages"].append(
-                {
-                    "role": "assistant",
-                    "content": msg,
-                }
-            )
-            print(msg + "\n")
-            new_msg = input("Enter your response or type as new to analyze new image: ")
-            if new_msg == "new" or new_msg == "exit":
-                exit(0)
-            if new_msg == "chart":
-                new_msg = input("Chart instruction: ")
-                self.submit_chart(new_msg)
-            else:
+            if prompt == 'image':
+                msg = response_json["choices"][0]["message"]["content"]
                 self.payload["messages"].append(
                     {
-                        "role": "user",
-                        "content": new_msg,
+                        "role": "assistant",
+                        "content": msg,
                     }
                 )
-            print("\n")
-            self.handler()
+                return msg
+            else:
+                new_msg = prompt
+                config.new_image_bool = False
+                #new_msg = input("Enter your response or type as new to analyze new image: ")
+                if new_msg == "exit":
+                    exit(0)
+                    
+                if new_msg == "new":
+                    config.new_image_bool = True
+                    self.submit_chart()
+                else:
+                    msg = response_json["choices"][0]["message"]["content"]
+                    self.payload["messages"].append(
+                        {
+                            "role": "user",
+                            "content": new_msg,
+                        }
+                    )
+                    return msg
+                #self.handler()
 
 
 #Conversation(api_key).handler()

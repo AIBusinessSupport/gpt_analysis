@@ -4,14 +4,14 @@ load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
 
-SYSTEM_INSTRUCTION = "You are a helpful crypto trader assistant. Under the with MACD and RSI indicators, you will find the volume, and below that, the RSI, MACD. \
+SYSTEM_INSTRUCTION = "You are a helpful crypto trader assistant. Under the with MACD, Bollinger Bands and RSI indicators, you will find the volume, and below that, the RSI, MACD. \
     Analyze the chart for patterns indicating the potential direction of the price. Keep your analysis short, concise, and to the point. \
     Should I buy or sell?, or stay out of market?"
 
-TARGET_INSTRUCTION = "Perform market analysis and price forecasting based off of this chart. And also provide me the conclusion of the analysis."
+TARGET_INSTRUCTION = "Perform market analysis and price forecasting based off of this chart. And also provide me the conclusion of the analysis shortly and clearly."
 
 global new_image_bool
-new_image_bool = False
+new_image_bool = True
 
 global gpt_conversation
 gpt_conversation = None

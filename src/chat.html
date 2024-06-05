@@ -15,8 +15,8 @@
         function sendMessage() {
             var userMessage = document.getElementById('user_message').value;
             var chat = document.getElementById('chat');
-            /*chat.innerHTML += '<p>You: ' + userMessage + '</p>';
-            */
+            chat.innerHTML += '<p>You: ' + userMessage + '</p>';
+            
             var data = { 'user_message': userMessage };
             fetch('/ask', {
                 method: 'POST',

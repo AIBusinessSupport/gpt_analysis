@@ -1,5 +1,6 @@
 import sys
 sys.path.append('..')
+import config
 import analysis
 from flask import Flask, render_template, request, jsonify
 import base64
@@ -13,9 +14,17 @@ def index():
 @app.route('/ask', methods=['POST'])
 def ask():
     user_message = request.json['user_message']
-    
+    print(user_message)
+    res = ''
+    if config.new_image_bool:
+        gpt_ana = analysis.Conversation(config.API_KEY)
+        res = gpt_ana.handler('image')
     # Handle text message
-    bot_response = "Bot: Hello! I am a bot. You said: " + user_message
+    else:
+        gpt_ = config.gpt_conversation
+        res = gpt_.handler(user_message)
+    
+    bot_response = res
     
     # Handle pasted image
     # if 'image_data' in request.json:
@@ -28,7 +37,7 @@ def ask():
     #         f.write(base64.b64decode(image_data))
         
     #     bot_response += " (Image pasted: pasted_image.png)"
-    
+    config.gpt_conversation = gpt_ana
     return jsonify({'bot_response': bot_response})
 
 if __name__ == '__main__':
